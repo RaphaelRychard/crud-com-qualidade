@@ -1,0 +1,6 @@
+{
+  "editorconfig": true,
+  "plugins": [
+    "prettier-plugin-tailwindcss"
+  ]
+}
