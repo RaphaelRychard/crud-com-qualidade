@@ -70,13 +70,22 @@ export function GlobalStyles({ themeName }: { themeName?: ThemeName }) {
           --color-basic-dark: #000;
           --color-basic-transparent: transparent;
           ${Object.keys(theme.neutral)
-            .map((key) => `--color-primary-${key}: ${theme.primary[key as keyof typeof theme.primary]};`)
+            .map(
+              (key) =>
+                `--color-primary-${key}: ${theme.primary[key as keyof typeof theme.primary]};`,
+            )
             .join("")}
           ${Object.keys(theme.neutral)
-            .map((key) => `--color-neutral-${key}: ${theme.neutral[key as keyof typeof theme.neutral]};`)
+            .map(
+              (key) =>
+                `--color-neutral-${key}: ${theme.neutral[key as keyof typeof theme.neutral]};`,
+            )
             .join("")}
           ${Object.keys(theme.negative)
-            .map((key) => `--color-negative-${key}: ${theme.negative[key as keyof typeof theme.negative]};`)
+            .map(
+              (key) =>
+                `--color-negative-${key}: ${theme.negative[key as keyof typeof theme.negative]};`,
+            )
             .join("")}
         }
 

@@ -1,43 +1,91 @@
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
-import * as url from "url";
-import { NextURL } from "next/dist/server/web/next-url";
-import { NEXT_URL } from "next/dist/client/components/app-router-headers";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { todoController } from "@ui/controller/todos";
 
 const bg = "/bg.jpeg";
 
 interface HomeTodo {
   id: string;
-  content: string,
+  content: string;
+  done: boolean;
 }
 
 export default function Page() {
-
+  const initialLoadComplete = useRef(false);
+  const [newTodoContent, setNewTodoContent] = useState("");
+  const [totalPage, setTotalPage] = useState(0);
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [todos, setTodos] = useState<HomeTodo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const homeTodos = todoController.filterTodosByContent<HomeTodo>(
+    search,
+    todos,
+  );
+
+  // setTodos(filterTodos);
+
+  const hasMorePages = totalPage > page;
+  const hasNoTodos = homeTodos.length === 0 && !isLoading;
 
   React.useEffect(() => {
-    todoController.get()
-      .then((todos) => {
-        setTodos(todos);
-      });
-  }, []);
+    if (!initialLoadComplete.current) {
+      todoController
+        .get({ page })
+        .then(({ todos, pages }) => {
+          setTodos(todos);
+          setTotalPage(pages);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          initialLoadComplete.current = true;
+        });
+    }
+  }, [page]);
 
   return (
     <main>
       <GlobalStyles themeName="indigo" />
       <header
         style={{
-          backgroundImage: `url('${bg}')`
+          backgroundImage: `url('${bg}')`,
         }}
       >
         <div className="typewriter">
           <h1>O que fazer hoje?</h1>
         </div>
-        <form>
-          <input type="text" placeholder="Correr, Estudar..." />
-          <button style={{ padding: 12 }} type="submit" aria-label="Adicionar novo item">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            todoController.create({
+              content: newTodoContent,
+              onSuccess(todo: HomeTodo) {
+                setTodos((odlTodos) => {
+                  return [todo, ...odlTodos];
+                });
+                setNewTodoContent("");
+              },
+              onError(customMessage) {
+                alert(customMessage || "Precisa ter o content para criar todo");
+              },
+            });
+          }}
+        >
+          <input
+            name="add-todo"
+            type="text"
+            placeholder="Correr, Estudar..."
+            value={newTodoContent}
+            onChange={function newTodoHandle(event) {
+              setNewTodoContent(event.target.value);
+            }}
+          />
+          <button
+            style={{ padding: 12 }}
+            type="submit"
+            aria-label="Adicionar novo item"
+          >
             +
           </button>
         </form>
@@ -45,63 +93,140 @@ export default function Page() {
 
       <section>
         <form>
-          <input type="text" placeholder="Filtrar lista atual, ex: Dentista" />
+          <input
+            type="text"
+            placeholder="Filtrar lista atual, ex: Dentista"
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+            }}
+          />
         </form>
 
         <table border={1}>
           <thead>
-          <tr>
-            <th align="left">
-              <input type="checkbox" disabled />
-            </th>
-            <th align="left">Id</th>
-            <th align="left">Conteúdo</th>
-            <th />
-          </tr>
+            <tr>
+              <th align="left">
+                <input type="checkbox" disabled />
+              </th>
+              <th align="left">Id</th>
+              <th align="left">Conteúdo</th>
+              <th />
+            </tr>
           </thead>
 
           <tbody>
-          {todos.map((todo) => {
-            return (
-              <tr key={todo.id}>
-                <td><input type="checkbox" /></td>
-                <td>{todo.id.substring(0, 4)}</td>
-                <td>{todo.content}</td>
-                <td align="right">
-                  <button data-type="delete">Apagar</button>
+            {homeTodos.map((todo) => {
+              return (
+                <tr key={todo.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={todo.done}
+                      onChange={function handleToggle() {
+                        todoController.toggleDone({
+                          id: todo.id,
+                          onError() {
+                            alert("Falha ao atualizar a TODO :(");
+                          },
+                          updateTodoOnScreen() {
+                            setTodos((currentTodos) => {
+                              return currentTodos.map((currentTodo) => {
+                                if (currentTodo.id === todo.id) {
+                                  return {
+                                    ...currentTodo,
+                                    done: !currentTodo.done,
+                                  };
+                                }
+                                return currentTodo;
+                              });
+                            });
+                          },
+                        });
+                      }}
+                    />
+                  </td>
+                  <td>{todo.id.substring(0, 4)}</td>
+                  <td>
+                    {!todo.done && todo.content}
+                    {todo.done && <s>{todo.content}</s>}
+                  </td>
+                  <td align="right">
+                    <button
+                      data-type="delete"
+                      onClick={function handleClick() {
+                        todoController
+                          .deleteById(todo.id)
+                          .then(() => {
+                            setTodos((currentTodos) => {
+                              return currentTodos.filter((currentTodo) => {
+                                return currentTodo.id !== todo.id;
+                              });
+                            });
+                          })
+                          .catch(() => {
+                            console.error("Failed to delete");
+                          });
+                      }}
+                    >
+                      Apagar
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+            {isLoading && (
+              <tr>
+                <td colSpan={4} align="center" style={{ textAlign: "center" }}>
+                  Carregando...
                 </td>
               </tr>
-            );
-          })}
+            )}
+            {hasNoTodos && (
+              <tr>
+                <td colSpan={4} align="center">
+                  Nenhum item encontrado
+                </td>
+              </tr>
+            )}
 
-          {/*<tr>*/}
-          {/*  <td colSpan={4} align="center" style={{ textAlign: "center" }}>*/}
-          {/*    Carregando...*/}
-          {/*  </td>*/}
-          {/*</tr>*/}
+            {hasMorePages && (
+              <tr>
+                <td colSpan={4} align="center" style={{ textAlign: "center" }}>
+                  <button
+                    data-type="load-more"
+                    onClick={() => {
+                      setIsLoading(true);
+                      const nextPage = page + 1;
+                      setPage(nextPage);
 
-          {/*<tr>*/}
-          {/*  <td colSpan={4} align="center">*/}
-          {/*    Nenhum item encontrado*/}
-          {/*  </td>*/}
-          {/*</tr>*/}
-
-          <tr>
-            <td colSpan={4} align="center" style={{ textAlign: "center" }}>
-              <button data-type="load-more" onClick={() => setPage(page + 1)}>
-                Pagina {page} Carregar mais{" "}
-                <span
-                  style={{
-                    display: "inline-block",
-                    marginLeft: "4px",
-                    fontSize: "1.2em"
-                  }}
-                >
-                  ↓
-                </span>
-              </button>
-            </td>
-          </tr>
+                      todoController
+                        .get({ page: nextPage })
+                        .then(({ todos, pages }) => {
+                          setTodos((oldTodos) => {
+                            return [...oldTodos, ...todos];
+                          });
+                          setTotalPage(pages);
+                        })
+                        .finally(() => {
+                          setIsLoading(false);
+                        });
+                    }}
+                  >
+                    Pagina {page} Carregar mais{" "}
+                    <span
+                      style={{
+                        display: "inline-block",
+                        marginLeft: "4px",
+                        fontSize: "1.2em",
+                      }}
+                    >
+                      ↓
+                    </span>
+                  </button>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </section>
