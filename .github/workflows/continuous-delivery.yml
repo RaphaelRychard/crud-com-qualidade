@@ -20,6 +20,6 @@ jobs:
         run: "ls -lah"
       - name: "Install Dependencies"
         run: "npm install"
-      - name: "Lint"yar
+      - name: "Lint"
         run: "npx vercel --prod"
 
