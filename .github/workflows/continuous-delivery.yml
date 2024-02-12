@@ -1,0 +1,9 @@
+name: "[CD] Continuous Delivery"
+
+#on:
+#  push:
+#    breaches: [ main ]
+
+on:
+  pull_request:
+    types: [ opened, synchronize ]
