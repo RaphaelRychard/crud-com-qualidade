@@ -18,5 +18,5 @@ jobs:
         run: "ls -lah"
       - name: "Install Dependencies"
         run: "npm ci"
-      - name: "Lint"
+      - name: "Lint"yar
         run: "npm run lint"
