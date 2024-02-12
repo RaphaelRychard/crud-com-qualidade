@@ -17,6 +17,6 @@ jobs:
       - name: "Debug"
         run: "ls -lah"
       - name: "Install Dependencies"
-        run: "npm ci"
+        run: "yarn ci"
       - name: "Lint"
         run: "npm run lint"

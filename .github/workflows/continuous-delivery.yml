@@ -18,6 +18,6 @@ jobs:
       - name: "Debug"
         run: "ls -la"
       - name: "Install Dependencies"
-        run: "npm install"
+        run: "yarn add"
       - name: "Deploy"
         run: "npx vercel --prod --token=CuZMRTb1iMsx2gEUIl77HX2p"
