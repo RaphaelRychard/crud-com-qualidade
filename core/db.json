@@ -1,29 +1,10 @@
 {
   "todos": [
     {
-      "id": "5637479a-feae-417d-a3c1-5c5b0bfd57b5",
-      "date": "2024-02-11T14:54:20.364Z",
-      "content": "Pokemon",
-      "done": false
-    },
-    {
-      "id": "3ded51d0-771f-4b74-923c-499b696cd78e",
-      "date": "2024-02-11T16:03:31.424Z",
-      "content": "adasd",
-      "done": false
-    },
-    {
-      "id": "57e0a163-45c2-4236-99ed-68b51db3ca47",
-      "date": "2024-02-11T16:18:48.276Z",
-      "content": "Nova Todo",
-      "done": false
-    },
-    {
-      "id": "c16e31f1-1285-4730-8770-2df7dd840587",
-      "date": "2024-02-11T16:23:43.454Z",
-      "content": "asdad",
-      "done": false
+      "id": "0094fe79-495c-4d39-b5a1-6711214fac58",
+      "date": "2024-02-11T23:40:31.107Z",
+      "content": "Tetste",
+      "done": true
     }
-  ],
-  "dogs": []
+  ]
 }
