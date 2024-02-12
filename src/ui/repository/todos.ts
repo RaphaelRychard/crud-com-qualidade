@@ -1,6 +1,5 @@
 import { Todo, TodoSchema } from "@ui/schema/todo";
 import { z as schema } from "zod";
-import { func } from "prop-types";
 
 interface TodoRepositoryGetParams {
   page: number;
