@@ -8,9 +8,6 @@ on:
   pull_request:
     types: [ opened, synchronize ]
 
-env:
-  VERCEL_ORG_ID: prj_AuDM0GfFUpR3gzmR8rTNBe1O5F9t
-  VERCEL_PROJECT_ID: team_VQFo16uoCwlC0i8ZIimDcw4J
 
 jobs:
   deploy:
