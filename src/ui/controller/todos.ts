@@ -1,7 +1,6 @@
 import { todoRepository } from "@ui/repository/todos";
-import { Todo, TodoSchema } from "@ui/schema/todo";
+import { Todo } from "@ui/schema/todo";
 import { z as schema } from "zod";
-import { func } from "prop-types";
 
 interface TodoControolerGetParams {
   page: number;
