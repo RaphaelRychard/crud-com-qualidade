@@ -3,4 +3,5 @@
 .idea
 cypress
 core
+.env
 
