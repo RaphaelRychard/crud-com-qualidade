@@ -1,21 +1,24 @@
-name: "CD Continuous Delivery"
+name: "[CD] Continuous Delivery"
+
+#on:
+#  push:
+#    breaches: [ main ]
 
 on:
   pull_request:
     types: [ opened, synchronize ]
 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout code"
-        uses: actions/checkout@v3
-
+      # [Common_CI_Steps]
+      - uses: actions/checkout@v3
+      ## ====================
       - name: "Debug"
         run: "ls -la"
-
       - name: "Install Dependencies"
         run: "yarn install"
-
       - name: "Deploy"
         run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}

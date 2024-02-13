@@ -1,5 +1,4 @@
-export async function GET(request: Request) {
-  console.log(request.headers);
+export async function GET() {
   return new Response(JSON.stringify({ message: "message test" }), {
     status: 200,
   });
