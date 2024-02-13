@@ -9,8 +9,8 @@ on:
     types: [ opened, synchronize ]
 
 env:
-  VESEL_PROJECT_ID: prj_AuDM0GfFUpR3gzmR8rTNBe1O5F9t
-  VERMICELLI_ORG_ID: team_VQFo16uoCwlC0i8ZIimDcw4J
+  VECEL_PROJECT_ID: prj_AuDM0GfFUpR3gzmR8rTNBe1O5F9t
+  VERCEL_ORG_ID: team_VQFo16uoCwlC0i8ZIimDcw4J
 
 jobs:
   deploy:
