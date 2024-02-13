@@ -8,6 +8,10 @@ on:
   pull_request:
     types: [ opened, synchronize ]
 
+env:
+  VECEL_PROJECT_ID: prj_AuDM0GfFUpR3gzmR8rTNBe1O5F9t
+  VERCEL_ORG_ID: team_VQFo16uoCwlC0i8ZIimDcw4J
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -20,4 +24,4 @@ jobs:
       - name: "Install Dependencies"
         run: "yarn install"
       - name: "Deploy"
-        run: "npx vercel --prod --token=CuZMRTb1iMsx2gEUIl77HX2p"
+        run: npx vercel --prod --token=${{ secrets.VERCEL_TOKEN }}

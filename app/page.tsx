@@ -1,5 +1,6 @@
+"use client";
 import { GlobalStyles } from "@ui/theme/GlobalStyles";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { todoController } from "@ui/controller/todos";
 
 const bg = "/bg.jpeg";
@@ -11,13 +12,13 @@ interface HomeTodo {
 }
 
 export default function Page() {
-  const initialLoadComplete = useRef(false);
-  const [newTodoContent, setNewTodoContent] = useState("");
-  const [totalPage, setTotalPage] = useState(0);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [todos, setTodos] = useState<HomeTodo[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const initialLoadComplete = React.useRef(false);
+  const [newTodoContent, setNewTodoContent] = React.useState("");
+  const [totalPage, setTotalPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
+  const [search, setSearch] = React.useState("");
+  const [todos, setTodos] = React.useState<HomeTodo[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const homeTodos = todoController.filterTodosByContent<HomeTodo>(
     search,
