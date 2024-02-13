@@ -3,72 +3,116 @@ import { z as schema } from "zod";
 import { todosRepository } from "@server/repository/todos";
 import { HttpNotFoundError } from "@server/infra/errors";
 
-async function get(req: NextApiRequest, res: NextApiResponse) {
-  const query = req.query;
+async function get(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const query = {
+    page: searchParams.get("page"),
+    limit: searchParams.get("limit"),
+  };
 
   const page = Number(query.page);
   const limit = Number(query.limit);
 
   if (query.page && isNaN(page)) {
-    res.status(400).json({
-      error: {
-        message: "`page` must be a number",
+    return new Response(
+      JSON.stringify({
+        error: {
+          message: "`page` must be a number",
+        },
+      }),
+      {
+        status: 400,
       },
-    });
-
-    return;
+    );
   }
 
   if (query.limit && isNaN(limit)) {
-    res.status(400).json({
-      error: {
-        message: "`limit` must be a number",
+    return new Response(
+      JSON.stringify({
+        error: {
+          message: "`limit` must be a number",
+        },
+      }),
+      {
+        status: 400,
       },
-    });
-
-    return;
+    );
   }
 
-  const output = await todosRepository.get({
-    page: Number(query.page),
-    limit: Number(query.limit),
-  });
+  try {
+    const output = await todosRepository.get({
+      page: Number(query.page),
+      limit: Number(query.limit),
+    });
 
-  res.status(200).json({
-    total: output.total,
-    pages: output.pages,
-    todos: output.todos,
-  });
+    return new Response(
+      JSON.stringify({
+        total: output.total,
+        pages: output.pages,
+        todos: output.todos,
+      }),
+      {
+        status: 200,
+      },
+    );
+  } catch {
+    return new Response(
+      JSON.stringify({
+        error: {
+          message: "Failed to fetch TODOs",
+        },
+      }),
+      {
+        status: 400,
+      },
+    );
+  }
 }
 
 const TodoCreateBodySchema = schema.object({
   content: schema.string(),
 });
 
-async function create(req: NextApiRequest, res: NextApiResponse) {
-  const body = TodoCreateBodySchema.safeParse(req.body);
+async function create(req: Request) {
+  const body = TodoCreateBodySchema.safeParse(await req.json());
 
   if (!body.success) {
-    res.status(400).json({
-      error: {
-        massage: "You need to provider a content to create a TODO",
-        description: body.error.issues,
+    return new Response(
+      JSON.stringify({
+        error: {
+          massage: "You need to provider a content to create a TODO",
+          description: body.error.issues,
+        },
+      }),
+      {
+        status: 400,
       },
-    });
-    return;
+    );
   }
 
   try {
     const createdTodo = await todosRepository.createByContent(
       body.data.content,
     );
-    res.status(201).json({ todo: createdTodo });
-  } catch {
-    res.status(400).json({
-      error: {
-        message: "Failed to create todo",
+    return new Response(
+      JSON.stringify({
+        todo: createdTodo,
+      }),
+      {
+        status: 201,
       },
-    });
+    );
+  } catch {
+    return new Response(
+      JSON.stringify({
+        error: {
+          message: "Failed to create todo",
+        },
+      }),
+      {
+        status: 400,
+      },
+    );
   }
 }
 
