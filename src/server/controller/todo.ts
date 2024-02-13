@@ -116,13 +116,9 @@ async function create(req: Request) {
 }
 
 async function toggleDone(req: Request, id: string) {
-  const parsedId = schema.object({
-    id: schema.string().trim(),
-  });
+  const todoId = id;
 
-  const todoId = parsedId.safeParse(id);
-
-  if (!todoId.success) {
+  if (!todoId || typeof todoId !== "string") {
     return new Response(
       JSON.stringify({
         error: {
